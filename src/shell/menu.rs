@@ -292,9 +292,15 @@ impl Messenger {
                 .flex()
                 .gap(px(CELL_GAP))
                 .pb(px(2.))
-                .children(choices.into_iter().take(ROW).enumerate().map(|(index, emoji)| {
-                    reaction_cell(index, emoji, chosen, chat_id, message_id, cx)
-                }))
+                .children(
+                    choices
+                        .into_iter()
+                        .take(ROW)
+                        .enumerate()
+                        .map(|(index, emoji)| {
+                            reaction_cell(index, emoji, chosen, chat_id, message_id, cx)
+                        }),
+                )
                 .when(more, |el| {
                     el.child(
                         div()
@@ -336,12 +342,10 @@ impl Messenger {
             .w(px(width))
             .max_h(px(CELL * 6. + CELL_GAP * 5.))
             .overflow_y_scroll()
-            .child(
-                div().flex().flex_wrap().gap(px(CELL_GAP)).children(
-                    choices.into_iter().enumerate().map(|(index, emoji)| {
-                        reaction_cell(index, emoji, chosen, chat_id, message_id, cx)
-                    }),
-                ),
-            )
+            .child(div().flex().flex_wrap().gap(px(CELL_GAP)).children(
+                choices.into_iter().enumerate().map(|(index, emoji)| {
+                    reaction_cell(index, emoji, chosen, chat_id, message_id, cx)
+                }),
+            ))
     }
 }

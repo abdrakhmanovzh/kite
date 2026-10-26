@@ -114,7 +114,7 @@ pub fn playable(path: &Path, cache: &Path) -> Result<PathBuf> {
 
 /// Where converted audio is cached between plays.
 pub fn audio_cache() -> PathBuf {
-    std::env::temp_dir().join("telegram-gpui-audio")
+    std::env::temp_dir().join("kite-audio")
 }
 
 /// Deletes converted audio not played for a week, so the cache doesn't grow

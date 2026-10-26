@@ -13,6 +13,17 @@ use gpui_kit::{
 
 use crate::ui::{self, hsla, hsla_alpha};
 
+/// The Kite logo (blue circle with the kite), decoded once.
+pub fn logo(size: f32) -> Img {
+    static LOGO: std::sync::LazyLock<std::sync::Arc<Image>> = std::sync::LazyLock::new(|| {
+        std::sync::Arc::new(Image::from_bytes(
+            ImageFormat::Png,
+            include_bytes!("../../assets/icon/logo.png").to_vec(),
+        ))
+    });
+    img(LOGO.clone()).size(px(size)).flex_shrink_0()
+}
+
 /// Square ghost button with a single icon: toolbars, headers, panels.
 /// The kit derives the glyph size from the button size, so use its named
 /// sizes (default: 32px box, 16px glyph) rather than pixel sizes.

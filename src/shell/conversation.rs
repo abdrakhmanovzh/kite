@@ -37,22 +37,7 @@ impl Messenger {
                 .justify_center()
                 .gap_3()
                 .child(drag_strip("empty-drag"))
-                .child(
-                    div()
-                        .size(px(72.))
-                        .rounded(px(22.))
-                        .bg(ui::hsla(ui::RAISED))
-                        .border_1()
-                        .border_color(ui::hsla(ui::STROKE_STRONG))
-                        .flex()
-                        .items_center()
-                        .justify_center()
-                        .child(
-                            Icon::new(IconName::MessageCircle)
-                                .size(px(30.))
-                                .text_color(ui::hsla(ui::ACCENT)),
-                        ),
-                )
+                .child(widgets::logo(72.))
                 .child(
                     div()
                         .mt_2()

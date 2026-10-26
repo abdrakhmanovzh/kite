@@ -1,9 +1,8 @@
 use std::time::Instant;
 
 use gpui_kit::{
-    assets::IconName,
     component::{
-        Disableable, Icon, Sizable,
+        Disableable, Sizable,
         button::{Button, ButtonVariants},
         input::Input,
         spinner::Spinner,
@@ -29,14 +28,14 @@ pub(super) fn placeholder(login: Login) -> &'static str {
 impl Messenger {
     pub(super) fn login_view(&self, cx: &mut Context<Self>) -> Div {
         let title = match self.login {
-            Login::Application => "Telegram for macOS",
+            Login::Application => "Welcome to Kite",
             Login::Phone => "Your Phone Number",
             Login::Qr => "Log in by QR Code",
             Login::Code | Login::EmailCode => "Enter Code",
             Login::Password => "Enter Password",
             Login::Email => "Your Email",
             Login::Blocked => "Unable to Continue",
-            _ => "Telegram",
+            _ => "Kite",
         };
         let form = matches!(
             self.login,
@@ -77,24 +76,7 @@ impl Messenger {
                             .bg(ui::hsla(ui::WHITE))
                             .child(crate::qr::view(qr.clone()))
                             .into_any_element(),
-                        None => div()
-                            .size(px(ui::AVATAR_XL))
-                            .rounded_full()
-                            .bg(ui::hsla(ui::BADGE))
-                            .flex()
-                            .items_center()
-                            .justify_center()
-                            .child(match self.login {
-                                Login::Waiting => Spinner::new()
-                                    .large()
-                                    .color(ui::hsla(ui::WHITE))
-                                    .into_any_element(),
-                                _ => Icon::new(IconName::Send)
-                                    .size(px(ui::AVATAR_XL * 0.44))
-                                    .text_color(ui::hsla(ui::WHITE))
-                                    .into_any_element(),
-                            })
-                            .into_any_element(),
+                        None => widgets::logo(ui::AVATAR_XL).into_any_element(),
                     })
                     .child(
                         div()
@@ -111,6 +93,9 @@ impl Messenger {
                             .line_height(px(20.))
                             .child(self.login_hint.clone()),
                     )
+                    .when(self.login == Login::Waiting, |el| {
+                        el.child(Spinner::new().color(ui::hsla(ui::MUTED)))
+                    })
                     .when(self.login == Login::Application, |el| {
                         el.child(field(&self.api_id)).child(field(&self.api_hash))
                     })

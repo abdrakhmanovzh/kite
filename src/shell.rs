@@ -87,10 +87,7 @@ const HISTORY_KEEP: usize = 60;
 const STICKER_HISTORY: usize = 50;
 
 fn sticker_history_path() -> Option<PathBuf> {
-    Some(
-        PathBuf::from(std::env::var_os("HOME")?)
-            .join("Library/Application Support/Telegram GPUI/recent_stickers.json"),
-    )
+    Some(crate::paths::data_dir()?.join("recent_stickers.json"))
 }
 
 fn load_sticker_history() -> Vec<tdlib_rs::types::Sticker> {
@@ -912,8 +909,11 @@ impl Messenger {
             Ok(Reply::CustomEmoji(stickers)) => {
                 self.prepare_stickers(&stickers, cx);
                 for sticker in stickers {
-                    if let tdlib_rs::enums::StickerFullType::CustomEmoji(custom) = &sticker.full_type {
-                        self.custom_emoji.insert(custom.custom_emoji_id, Some(sticker));
+                    if let tdlib_rs::enums::StickerFullType::CustomEmoji(custom) =
+                        &sticker.full_type
+                    {
+                        self.custom_emoji
+                            .insert(custom.custom_emoji_id, Some(sticker));
                     }
                 }
             }
@@ -1035,7 +1035,7 @@ impl Messenger {
                             let title = self
                                 .chats
                                 .get(&update.chat_id)
-                                .map_or("Telegram", |c| c.info.title.as_str());
+                                .map_or("Kite", |c| c.info.title.as_str());
                             let body: String = if info.show_preview {
                                 message_text(&info.message.content)
                                     .chars()

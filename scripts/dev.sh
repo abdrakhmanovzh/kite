@@ -9,12 +9,12 @@ stamp() { find src Cargo.toml -type f -exec stat -f '%m %N' {} + | sort | md5 -q
 pid=""
 restart() {
     if cargo build --locked 2>&1 | grep -E '^(error|warning)' -A6; then :; fi
-    if [ ! -x target/debug/telegram-desktop ] || ! cargo build --locked -q 2>/dev/null; then
+    if [ ! -x target/debug/kite ] || ! cargo build --locked -q 2>/dev/null; then
         echo "build failed; keeping the running app"
         return
     fi
     [ -n "$pid" ] && kill "$pid" 2>/dev/null && wait "$pid" 2>/dev/null
-    ./target/debug/telegram-desktop >/dev/null 2>&1 &
+    ./target/debug/kite >/dev/null 2>&1 &
     pid=$!
     echo "$(date +%H:%M:%S) running (pid $pid)"
 }

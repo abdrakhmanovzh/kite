@@ -3556,6 +3556,31 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e2db585e1d738fc771bf08a151420d3ed193d9d895a36df7f6f8a9456b911ddc"
 
 [[package]]
+name = "kite"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-channel",
+ "block2 0.6.2",
+ "chrono",
+ "flate2",
+ "gpui-kit",
+ "image",
+ "objc2 0.6.5",
+ "objc2-app-kit 0.3.2",
+ "objc2-avf-audio",
+ "objc2-core-image 0.3.2",
+ "objc2-foundation 0.3.2",
+ "objc2-user-notifications",
+ "rasterlottie",
+ "serde",
+ "serde_json",
+ "smol",
+ "tdlib-rs",
+ "url",
+]
+
+[[package]]
 name = "kqueue"
 version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6556,30 +6581,6 @@ name = "tdlib-rs-parser"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3d792369bc9984e0a469c0acff4dea61f3bc63c4a6a4a70005e109ba899d7762"
-
-[[package]]
-name = "telegram-desktop"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "async-channel",
- "block2 0.6.2",
- "chrono",
- "flate2",
- "gpui-kit",
- "image",
- "objc2 0.6.5",
- "objc2-avf-audio",
- "objc2-core-image 0.3.2",
- "objc2-foundation 0.3.2",
- "objc2-user-notifications",
- "rasterlottie",
- "serde",
- "serde_json",
- "smol",
- "tdlib-rs",
- "url",
-]
 
 [[package]]
 name = "tempfile"

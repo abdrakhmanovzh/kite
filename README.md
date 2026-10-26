@@ -1,4 +1,8 @@
-# Telegram for macOS
+# Kite
+
+<img src="assets/icon/icon.png" width="128" alt="Kite icon">
+
+A native Telegram client for macOS, built with GPUI and TDLib.
 
 A personal Telegram client in Rust and GPUI, following the dark graphite design in `design/reference.png`.
 
@@ -29,7 +33,7 @@ cargo run --locked
 
 ```sh
 sh scripts/bundle.sh
-open "target/Telegram GPUI.app"
+open target/Kite.app
 ```
 
 The connected build has been compiled and launched on macOS 14.7 with Rust 1.99.1. Formatting and Clippy pass; the credentials screen and empty-input validation were checked in the native app. QR login succeeded on the user’s account, and real chats and history were observed in the native app. A self-check message was sent successfully to Saved Messages and found with in-chat search. Other mutating actions and notification delivery still require manual validation.
@@ -44,11 +48,19 @@ The connected build has been compiled and launched on macOS 14.7 with Rust 1.99.
 python3 scripts/demo_defaults.py $(find target/debug/build -path "*tdlib-rs*" -name generated.rs | head -1) > src/demo/defaults.json
 ```
 
+## Icon
+
+`assets/icon/` holds the logo (`logo.png`, used in the app), the macOS icon (`icon.png`, also set as the Dock icon when running outside a bundle) and `Kite.icns` for the bundle. All three are drawn by `scripts/make_icon.py`:
+
+```sh
+python3 scripts/make_icon.py
+```
+
 ## Sign in
 
 Create your application at https://my.telegram.org under **API development tools**. Enter the resulting API ID and API hash directly into the app, then choose **Log in with QR code** or follow the phone/code/password prompts. For QR login, open Telegram on your phone → Settings → Devices → Link Desktop Device. QR codes are generated locally using macOS Core Image and refresh with TDLib authorization updates. This build only signs in to existing accounts; it doesn't create accounts or make purchases.
 
-The application credentials and TDLib session/database are saved under `~/Library/Application Support/Telegram GPUI`. The directory is created with owner-only access and the credentials file with mode 0600. The TDLib database has no additional encryption key in this build. Verification codes and passwords are not written into application settings. Treat the session directory as private account data.
+The application credentials and TDLib session/database are saved under `~/Library/Application Support/Kite`. Data from builds before the rename (`~/Library/Application Support/Telegram GPUI`) is moved there on first launch. The directory is created with owner-only access and the credentials file with mode 0600. The TDLib database has no additional encryption key in this build. Verification codes and passwords are not written into application settings. Treat the session directory as private account data.
 
 ## Checks
 

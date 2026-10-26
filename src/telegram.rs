@@ -393,8 +393,7 @@ fn request_kind(command: &Command) -> Request {
 }
 
 fn data_directory() -> Result<PathBuf> {
-    let directory = PathBuf::from(std::env::var_os("HOME").context("HOME is not set")?)
-        .join("Library/Application Support/Telegram GPUI");
+    let directory = crate::paths::data_dir().context("HOME is not set")?;
     fs::DirBuilder::new()
         .recursive(true)
         .mode(0o700)
@@ -713,7 +712,9 @@ async fn execute(command: Command, id: i32, directory: &std::path::Path) -> Resu
             remove,
         } => {
             let reaction = match reaction {
-                Reaction::Emoji(emoji) => enums::ReactionType::Emoji(types::ReactionTypeEmoji { emoji }),
+                Reaction::Emoji(emoji) => {
+                    enums::ReactionType::Emoji(types::ReactionTypeEmoji { emoji })
+                }
                 Reaction::Custom(custom_emoji_id) => {
                     enums::ReactionType::CustomEmoji(types::ReactionTypeCustomEmoji {
                         custom_emoji_id,
@@ -859,10 +860,9 @@ async fn execute(command: Command, id: i32, directory: &std::path::Path) -> Resu
             return Ok(Reply::AvailableReactions(emoji));
         }
         Command::CustomEmoji(ids) => {
-            let enums::Stickers::Stickers(found) =
-                functions::get_custom_emoji_stickers(ids, id)
-                    .await
-                    .map_err(|e| e.message)?;
+            let enums::Stickers::Stickers(found) = functions::get_custom_emoji_stickers(ids, id)
+                .await
+                .map_err(|e| e.message)?;
             return Ok(Reply::CustomEmoji(found.stickers));
         }
         Command::ProfilePhotos { chat_id, kind } => {

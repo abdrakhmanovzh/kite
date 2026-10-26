@@ -1540,15 +1540,16 @@ impl Messenger {
                 .items_center()
                 .gap(px(5.))
                 .when_some(reaction, |el, reaction| {
-                    el.cursor_pointer().on_click(cx.listener(move |this, _, _, cx| {
-                        this.send(Command::React {
-                            chat_id,
-                            message_id: id,
-                            reaction: reaction.clone(),
-                            remove: chosen,
-                        });
-                        cx.notify();
-                    }))
+                    el.cursor_pointer()
+                        .on_click(cx.listener(move |this, _, _, cx| {
+                            this.send(Command::React {
+                                chat_id,
+                                message_id: id,
+                                reaction: reaction.clone(),
+                                remove: chosen,
+                            });
+                            cx.notify();
+                        }))
                 })
                 .child(self.reaction_glyph(&chip.kind))
                 .child(
@@ -1592,9 +1593,7 @@ impl Messenger {
                         img(PathBuf::from(&file.local.path))
                             .size(size)
                             .object_fit(ObjectFit::Contain)
-                            .with_fallback(move || {
-                                div().child(emoji.clone()).into_any_element()
-                            })
+                            .with_fallback(move || div().child(emoji.clone()).into_any_element())
                             .into_any_element()
                     }
                     None => text(sticker.emoji.clone()),

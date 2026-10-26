@@ -1,5 +1,5 @@
 [package]
-name = "telegram-desktop"
+name = "kite"
 version = "0.1.0"
 edition = "2024"
 publish = false
@@ -18,6 +18,8 @@ objc2 = "0.6.5"
 block2 = "0.6.2"
 objc2-user-notifications = { version = "0.3.2", default-features = false, features = ["std", "block2", "UNUserNotificationCenter", "UNNotificationContent", "UNNotificationRequest", "UNNotificationTrigger", "UNNotificationSound", "UNNotificationSettings"] }
 objc2-foundation = { version = "0.3.2", default-features = false, features = ["std", "NSData", "NSString", "NSBundle", "NSError", "NSURL", "NSDate"] }
+# The Dock icon when running outside the app bundle (cargo run).
+objc2-app-kit = { version = "0.3.2", default-features = false, features = ["std", "NSApplication", "NSImage", "NSResponder"] }
 # In-app playback of voice messages, audio files and round video messages.
 objc2-avf-audio = { version = "0.3.2", default-features = false, features = ["std", "AVAudioPlayer"] }
 # Animated stickers: TGS is gzipped Lottie JSON, rendered to frames.
