@@ -3,6 +3,7 @@
 manner of Telegram's paper plane.
 
 Writes assets/icon/logo.png (the bare circle, for in-app use),
+assets/icon/tray.png (the kite alone as a menu bar template image),
 assets/icon/icon.png (1024px macOS icon with the system's padding and
 shadow) and assets/icon/Kite.icns. Needs Pillow; iconutil ships with macOS.
 
@@ -132,6 +133,26 @@ def logo(size):
     return disc.resize((size, size), Image.LANCZOS)
 
 
+def tray(size=44):
+    """The kite alone for the menu bar: a template image (only alpha counts;
+    macOS tints it), `size` pixels for a 22pt item at 2x."""
+    big = 1000 * SS
+    alpha = kite_glyph(big).getchannel("A")
+    box = alpha.getbbox()
+    glyph = alpha.crop(box)
+    side = max(glyph.size)
+    square = Image.new("L", (side, side), 0)
+    square.paste(glyph, ((side - glyph.width) // 2, (side - glyph.height) // 2))
+    # macOS menu bar glyphs sit in a 22pt box with ~2pt of air each side.
+    inner = round(size * 18 / 22)
+    mark = square.resize((inner, inner), Image.LANCZOS)
+    out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    black = Image.new("RGBA", (inner, inner), (0, 0, 0, 255))
+    offset = (size - inner) // 2
+    out.paste(black, (offset, offset), mark)
+    return out
+
+
 def mac_icon(size=1024):
     """macOS icon grid: the art spans 824 of 1024 px, with a soft shadow."""
     canvas = Image.new("RGBA", (size, size), (0, 0, 0, 0))
@@ -151,6 +172,7 @@ def mac_icon(size=1024):
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
     logo(512).save(OUT / "logo.png")
+    tray().save(OUT / "tray.png")
     icon = mac_icon(1024)
     icon.save(OUT / "icon.png")
     with tempfile.TemporaryDirectory() as tmp:
