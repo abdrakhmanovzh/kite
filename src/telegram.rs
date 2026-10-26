@@ -118,6 +118,8 @@ pub enum Command {
         chat_id: i64,
         kind: enums::ChatType,
     },
+    /// Session settings that keep TDLib's memory down.
+    Tune,
     /// The emoji reactions the current user may add to a message.
     AvailableReactions {
         chat_id: i64,
@@ -367,7 +369,7 @@ fn request_kind(command: &Command) -> Request {
         } => Request::AvailableReactions(*chat_id, *message_id),
         Command::CustomEmoji(_) => Request::CustomEmoji,
         Command::SharedMedia(chat_id) => Request::SharedMedia(*chat_id),
-        Command::Read { .. } | Command::Draft { .. } => Request::Background,
+        Command::Read { .. } | Command::Draft { .. } | Command::Tune => Request::Background,
         Command::Archive { .. }
         | Command::Pin { .. }
         | Command::Mute { .. }
@@ -843,6 +845,20 @@ async fn execute(command: Command, id: i32, directory: &std::path::Path) -> Resu
                 enums::ChatType::Secret(_) => Profile::default(),
             };
             return Ok(Reply::Profile(profile));
+        }
+        Command::Tune => {
+            // Unload messages of chats nobody looks at after a minute
+            // (TDLib's default keeps them far longer).
+            functions::set_option(
+                "message_unload_delay".into(),
+                Some(enums::OptionValue::Integer(types::OptionValueInteger {
+                    value: 60,
+                })),
+                id,
+            )
+            .await
+            .map_err(|e| e.message)?;
+            return Ok(Reply::Done);
         }
         Command::AvailableReactions {
             chat_id,

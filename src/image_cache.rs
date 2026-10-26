@@ -13,8 +13,9 @@ use gpui_kit::{
     Window, hash,
 };
 
-/// Decoded bytes kept before evicting: about sixty full-size photos.
-const BUDGET: usize = 256 * 1024 * 1024;
+/// Decoded bytes kept before evicting: a screenful of photos and avatars
+/// with room to scroll back; older ones reload from disk.
+const BUDGET: usize = 96 * 1024 * 1024;
 
 struct Entry {
     item: ImageCacheItem,
@@ -45,6 +46,16 @@ impl LruImageCache {
         })
         .detach();
         cache
+    }
+
+    /// Drops every image and its texture (the window was hidden).
+    pub fn clear(&mut self, cx: &mut App) {
+        for (_, entry) in self.entries.drain() {
+            if let Some(Ok(image)) = entry.item.get() {
+                cx.drop_image(image, None);
+            }
+        }
+        self.bytes = 0;
     }
 
     fn evict(&mut self, keep: u64, window: &mut Window, cx: &mut App) {

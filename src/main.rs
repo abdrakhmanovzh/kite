@@ -35,9 +35,6 @@ fn main() {
             KeyBinding::new("cmd-q", Quit, None),
             KeyBinding::new("cmd-w", CloseWindow, None),
         ]);
-        // Closing the window keeps Kite running, like Telegram: it hides,
-        // and the Dock or menu bar item brings it back.
-        cx.on_action(|_: &CloseWindow, cx| cx.hide());
         let options = WindowOptions {
             window_bounds: Some(WindowBounds::Windowed(Bounds::centered(
                 None,
@@ -58,9 +55,14 @@ fn main() {
             cx.on_action(move |_: &Quit, cx| {
                 let _ = weak.update(cx, |view, cx| view.quit(cx));
             });
-            // The red button closes the same way as Cmd+W.
-            window.on_window_should_close(cx, |_, cx| {
-                cx.hide();
+            // Closing the window keeps Kite running, like Telegram: it hides
+            // (freeing what only matters on screen), and the Dock or menu bar
+            // item brings it back. Cmd+W and the red button do the same.
+            let weak = view.downgrade();
+            cx.on_action(move |_: &CloseWindow, cx| hide(&weak, cx));
+            let weak = view.downgrade();
+            window.on_window_should_close(cx, move |_, cx| {
+                hide(&weak, cx);
                 false
             });
             start_tray(view.downgrade(), cx);
@@ -71,6 +73,11 @@ fn main() {
         }
         cx.activate(true);
     });
+}
+
+fn hide(view: &WeakEntity<shell::Messenger>, cx: &mut App) {
+    let _ = view.update(cx, |view, cx| view.release_memory(cx));
+    cx.hide();
 }
 
 /// Adds the menu bar item and handles its menu.

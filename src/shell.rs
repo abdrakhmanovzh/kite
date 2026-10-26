@@ -108,8 +108,8 @@ fn save_sticker_history(stickers: &[tdlib_rs::types::Sticker]) -> anyhow::Result
 
 /// Decoded animations kept, per kind: full chat animations hold up to ~90
 /// 240px frames (~20 MB) each; picker first frames are one 128px frame.
-const MAX_ANIMATIONS: usize = 24;
-const MAX_FIRST_FRAMES: usize = 160;
+const MAX_ANIMATIONS: usize = 8;
+const MAX_FIRST_FRAMES: usize = 80;
 
 /// One entry of the virtualized history.
 #[derive(Clone, Copy, PartialEq, Eq)]
@@ -745,6 +745,7 @@ impl Messenger {
             self.auth_busy = self.send(Command::Configure(credentials));
         }
         if login == Login::Ready && changed {
+            self.send(Command::Tune);
             self.load_chats(cx);
             // Learn whether the archive has chats, for its row in the list.
             self.send(Command::LoadChats(List::Archive));
@@ -1413,6 +1414,37 @@ impl Messenger {
             });
         })
         .detach();
+    }
+
+    /// Frees what only matters on screen, for when the window is hidden in
+    /// the menu bar: decoded images, sticker animations and their GPU
+    /// textures, video playback, and older messages of chats not open.
+    /// Everything reloads from TDLib's disk cache when the window returns.
+    pub fn release_memory(&mut self, cx: &mut Context<Self>) {
+        self.image_cache.update(cx, |cache, cx| cache.clear(cx));
+        for (_, entry) in self.animations.drain() {
+            if let Anim::Ready(frames) = entry.anim {
+                for image in frames.images {
+                    cx.drop_image(image, None);
+                }
+            }
+        }
+        for (_, image) in self.minithumbs.drain() {
+            cx.drop_image(image, None);
+        }
+        self.stop_playback(cx);
+        let open = self.selected;
+        let ids: Vec<i64> = self
+            .chats
+            .keys()
+            .copied()
+            .filter(|id| Some(*id) != open)
+            .collect();
+        for id in ids {
+            self.trim_history(id, cx);
+        }
+        // Thumbnails decode again on the next render.
+        self.rows_source = None;
     }
 
     fn set_unread(&mut self, count: i32, cx: &mut App) {
