@@ -3,6 +3,7 @@ mod image_cache;
 mod media;
 mod model;
 mod notifications;
+mod opus;
 mod paths;
 mod qr;
 mod shell;
@@ -10,6 +11,7 @@ mod stickers;
 mod telegram;
 mod tray;
 mod ui;
+mod webm;
 
 use gpui_kit::{prelude::*, *};
 

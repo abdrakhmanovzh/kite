@@ -25,7 +25,7 @@ Not included: calls, voice recording, stories, secret chats, group administratio
 
 ## Run
 
-You need Rust (stable) and Apple's Command Line Tools. TDLib is downloaded and linked automatically on the first build. Playing voice notes needs ffmpeg (`brew install ffmpeg`).
+You need Rust (stable), Apple's Command Line Tools and libvpx for video stickers (`brew install libvpx`; it's linked statically, so the app itself needs nothing installed). TDLib is downloaded and linked automatically on the first build.
 
 ```sh
 cargo run --locked            # development build

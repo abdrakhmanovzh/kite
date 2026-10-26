@@ -1,15 +1,9 @@
 //! Rasterizes animated (TGS, gzipped Lottie) and video (WebM) stickers into
 //! frames GPUI can play. Runs on a background thread.
 
-use std::{
-    io::Read,
-    path::PathBuf,
-    process::{Command, Stdio},
-    sync::Arc,
-    time::Duration,
-};
+use std::{io::Read, path::PathBuf, sync::Arc, time::Duration};
 
-use anyhow::{Context, Result, bail, ensure};
+use anyhow::{Context, Result, ensure};
 use gpui_kit::{RenderImage, swap_rgba_pa_to_bgra};
 use image::{Delay, Frame, RgbaImage};
 use rasterlottie::{Animation, RenderConfig, Renderer, Rgba8};
@@ -95,50 +89,103 @@ fn lottie(spec: &Spec) -> Result<Vec<Frame>> {
 }
 
 fn video(spec: &Spec) -> Result<Vec<Frame>> {
-    let ffmpeg = crate::media::ffmpeg().context("ffmpeg is not installed")?;
-    let (width, height) = (spec.width, spec.height);
-    let mut command = Command::new(ffmpeg);
-    // libvpx decodes the VP9 alpha channel; the built-in decoder drops it.
-    command
-        .args(["-v", "error", "-c:v", "libvpx-vp9", "-i"])
-        .arg(&spec.path)
-        .args([
-            "-vf",
-            &format!("fps={FPS},scale={width}:{height}"),
-            "-f",
-            "rawvideo",
-            "-pix_fmt",
-            "rgba",
-        ]);
-    let wanted = if spec.animate { MAX_FRAMES } else { 1 };
-    command.args(["-frames:v", &wanted.to_string()]);
-    let mut child = command
-        .arg("-")
-        .stdin(Stdio::null())
-        .stdout(Stdio::piped())
-        .stderr(Stdio::null())
-        .spawn()?;
-    let mut stdout = child.stdout.take().context("no ffmpeg output")?;
-    // Read frame by frame into each frame's own buffer, rather than
-    // collecting ffmpeg's whole output and copying it out again.
-    let frame_len = (width * height * 4) as usize;
-    let delay = Delay::from_numer_denom_ms(1000, FPS as u32);
+    let data = std::fs::read(&spec.path)?;
+    let packets = crate::webm::packets(&data)?;
+    ensure!(!packets.is_empty(), "no video frames");
+    // Every frame must be decoded (VP9 frames build on each other), but
+    // only every `step`-th is kept, to play at about FPS.
+    let span = packets.last().map_or(0., |p| p.time_ms) - packets[0].time_ms;
+    let source_fps = if span > 0. {
+        (packets.len() - 1) as f32 * 1000. / span as f32
+    } else {
+        FPS
+    };
+    let step = (source_fps / FPS).round().max(1.) as usize;
+    let delay = Delay::from_numer_denom_ms((1000. * step as f32 / source_fps).round() as u32, 1);
+    let mut color = crate::webm::Decoder::new()?;
+    let mut alpha = crate::webm::Decoder::new()?;
     let mut frames = Vec::new();
-    while frames.len() < wanted {
-        let mut pixels = vec![0u8; frame_len];
-        if stdout.read_exact(&mut pixels).is_err() {
+    for (index, packet) in packets.iter().enumerate() {
+        let picture = color.decode(&packet.color)?;
+        let mask = match &packet.alpha {
+            Some(data) => alpha.decode(data)?,
+            None => None,
+        };
+        if index % step != 0 {
+            continue;
+        }
+        let Some(picture) = picture else {
+            continue;
+        };
+        let full = RgbaImage::from_raw(
+            picture.width as u32,
+            picture.height as u32,
+            picture.to_bgra(mask.as_ref()),
+        )
+        .context("frame size mismatch")?;
+        frames.push(Frame::from_parts(scaled(full, spec), 0, 0, delay));
+        if !spec.animate || frames.len() >= MAX_FRAMES {
             break;
         }
-        for pixel in pixels.as_chunks_mut::<4>().0 {
-            pixel.swap(0, 2);
-        }
-        let buffer = RgbaImage::from_raw(width, height, pixels).context("frame size mismatch")?;
-        frames.push(Frame::from_parts(buffer, 0, 0, delay));
-    }
-    drop(stdout);
-    let status = child.wait()?;
-    if frames.is_empty() && !status.success() {
-        bail!("ffmpeg failed to decode the sticker");
     }
     Ok(frames)
+}
+
+/// Resizes a straight-alpha BGRA frame to the spec's size, premultiplying
+/// around the resize so transparent pixels' colors don't bleed into edges.
+fn scaled(mut image: RgbaImage, spec: &Spec) -> RgbaImage {
+    if image.dimensions() == (spec.width, spec.height) {
+        return image;
+    }
+    for pixel in image.pixels_mut() {
+        let a = u16::from(pixel[3]);
+        for channel in &mut pixel.0[..3] {
+            *channel = ((u16::from(*channel) * a + 127) / 255) as u8;
+        }
+    }
+    let mut image = image::imageops::resize(
+        &image,
+        spec.width,
+        spec.height,
+        image::imageops::FilterType::Triangle,
+    );
+    for pixel in image.pixels_mut() {
+        let a = u16::from(pixel[3]);
+        if let Some(divisor) = std::num::NonZeroU16::new(a) {
+            for channel in &mut pixel.0[..3] {
+                *channel = ((u16::from(*channel) * 255 + a / 2) / divisor).min(255) as u8;
+            }
+        }
+    }
+    image
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    /// A VP9 sticker with transparency: clear corners, an opaque blue box.
+    #[test]
+    fn video_sticker_with_alpha() -> Result<()> {
+        let spec = Spec {
+            kind: Kind::Video,
+            path: concat!(env!("CARGO_MANIFEST_DIR"), "/assets/demo/sticker-box.webm").into(),
+            width: 240,
+            height: 240,
+            animate: true,
+        };
+        let frames = video(&spec)?;
+        // Two seconds at 30 fps.
+        ensure!((55..=61).contains(&frames.len()), "{} frames", frames.len());
+        let first = frames[0].buffer();
+        let at = |x, y| first.get_pixel(x, y).0;
+        ensure!(at(4, 4)[3] == 0, "corner isn't transparent: {:?}", at(4, 4));
+        let [b, g, r, a] = at(120, 120);
+        ensure!(
+            a > 240 && b > 230 && r < 110,
+            "box pixel {:?}",
+            [b, g, r, a]
+        );
+        Ok(())
+    }
 }

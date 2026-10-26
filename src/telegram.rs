@@ -400,12 +400,25 @@ fn data_directory() -> Result<PathBuf> {
         .create(&directory)?;
     Ok(directory)
 }
+/// Kite's own Telegram API credentials, built in when `KITE_API_ID` and
+/// `KITE_API_HASH` are set at compile time (release builds get them from
+/// CI secrets), so users only log in.
+fn embedded_credentials() -> Option<Credentials> {
+    Some(Credentials {
+        api_id: option_env!("KITE_API_ID")?.trim().parse().ok()?,
+        api_hash: option_env!("KITE_API_HASH")?.trim().to_owned(),
+    })
+    .filter(|c| c.api_id > 0 && !c.api_hash.is_empty())
+}
+
+/// Credentials saved on this Mac win (from the setup screen), then the
+/// built-in ones; None means the setup screen asks for them.
 fn load_credentials(directory: &std::path::Path) -> Result<Option<Credentials>> {
     match fs::read(directory.join("application.json")) {
         Ok(bytes) => Ok(Some(
             serde_json::from_slice(&bytes).context("Cannot read saved application credentials")?,
         )),
-        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(None),
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(embedded_credentials()),
         Err(error) => Err(error.into()),
     }
 }

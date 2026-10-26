@@ -26,8 +26,13 @@ objc2-avf-audio = { version = "0.3.2", default-features = false, features = ["st
 # Animated stickers: TGS is gzipped Lottie JSON, rendered to frames.
 rasterlottie = { version = "0.2.4", default-features = false }
 flate2 = "1.1"
+# Voice notes: Ogg Opus is rewritten as CAF, which macOS decodes natively.
+ogg = "0.9"
 image = { version = "0.25", default-features = false }
 objc2-core-image = { version = "0.3.2", default-features = false, features = ["std", "CIFilter", "CIFilterBuiltins", "CIImage", "CIContext", "objc2-core-foundation", "objc2-core-graphics"] }
+objc2-av-foundation = { version = "0.3.2", default-features = false, features = ["std", "AVAsset", "AVAssetReader", "AVAssetReaderOutput", "AVAssetTrack", "AVMediaFormat", "AVTime", "objc2-core-media"] }
+objc2-core-media = { version = "0.3.2", default-features = false, features = ["std", "CMSampleBuffer", "CMTime", "CMBase", "objc2-core-video"] }
+objc2-core-video = { version = "0.3.2", default-features = false, features = ["std", "CVPixelBuffer", "CVImageBuffer", "CVBuffer", "CVReturn", "CVBase"] }
 
 [lints.clippy]
 unwrap_used = "deny"
