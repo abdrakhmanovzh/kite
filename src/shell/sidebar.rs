@@ -338,6 +338,10 @@ impl Messenger {
         let chat = self.chats.get(&id)?;
         let selected = self.selected == Some(id);
         let muted = chat.info.notification_settings.mute_for > 0;
+        let online = !self.is_self_chat(chat)
+            && matches!(&chat.info.r#type, tdlib_rs::enums::ChatType::Private(p)
+                if self.users.get(&p.user_id).is_some_and(|u|
+                    matches!(u.status, tdlib_rs::enums::UserStatus::Online(_))));
         let pinned = chat
             .info
             .positions
@@ -424,7 +428,13 @@ impl Messenger {
         Some(
             row_shell(("chat", id as u64).into(), selected)
                 .on_click(cx.listener(move |this, _, window, cx| this.select_chat(id, window, cx)))
-                .child(self.chat_avatar(chat, AVATAR))
+                .child(
+                    div()
+                        .relative()
+                        .flex_shrink_0()
+                        .child(self.chat_avatar(chat, AVATAR))
+                        .when(online, |el| el.child(online_dot(selected))),
+                )
                 .child(
                     div()
                         .flex_1()
@@ -584,9 +594,31 @@ impl Messenger {
     }
 }
 
+/// Group name of chat rows, so parts of a row can follow its hover.
+const ROW: &str = "chat-row";
+
+/// Green dot on an avatar's lower right corner. Its ring takes the row's
+/// background (plain, hovered or selected), cutting it out of the avatar.
+fn online_dot(selected: bool) -> Div {
+    let ring = if selected { ui::SELECTED } else { ui::WINDOW };
+    div()
+        .absolute()
+        .right(px(0.))
+        .bottom(px(0.))
+        .size(px(14.))
+        .rounded_full()
+        .bg(ui::hsla(ui::ONLINE))
+        .border_2()
+        .border_color(ui::hsla(ring))
+        .when(!selected, |el| {
+            el.group_hover(ROW, |s| s.border_color(ui::hsla(ui::HOVER)))
+        })
+}
+
 fn row_shell(id: ElementId, selected: bool) -> Stateful<Div> {
     div()
         .id(id)
+        .group(ROW)
         .w_full()
         .overflow_hidden()
         .h(px(ROW_HEIGHT))

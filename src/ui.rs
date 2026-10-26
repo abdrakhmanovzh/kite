@@ -91,6 +91,8 @@ pub const BADGE_MUTED: Color = color(0x4a5059, 0xb3bac4);
 pub const PRIMARY_HOVER: Color = color(0x6fabf8, 0x4a9df0);
 pub const PRIMARY_ACTIVE: Color = color(0x4f8fe0, 0x2a7fd6);
 pub const DANGER: Color = color(0xf06b62, 0xe0453a);
+/// The "online" dot on avatars.
+pub const ONLINE: Color = color(0x4cd36a, 0x2fbf55);
 /// Hover on destructive menu items.
 pub const DANGER_HOVER: Color = color(0x3a2526, 0xfde9e7);
 
