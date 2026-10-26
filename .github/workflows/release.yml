@@ -1,12 +1,22 @@
 # Pushing a tag like v0.2.0 builds Kite.dmg and publishes it as a GitHub
 # release. Needs repository secrets KITE_API_ID and KITE_API_HASH (from
 # my.telegram.org) to build the Telegram API credentials in.
+#
+# Pushes to main build too, without publishing: GitHub only shares caches
+# saved on the default branch, so these keep the build cache that tag
+# builds restore (a cache saved by one tag is invisible to the next).
 name: Release
 
 on:
   push:
+    branches: [main]
     tags: ["v*"]
   workflow_dispatch:
+
+# A newer push to main supersedes a running build; tags always finish.
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: ${{ github.ref == 'refs/heads/main' }}
 
 permissions:
   contents: write
@@ -20,6 +30,9 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
 
       - uses: Swatinem/rust-cache@v2
+        with:
+          # One cache for main and tags alike.
+          shared-key: release
 
       # Video stickers; linked statically into the app.
       - run: brew install libvpx
@@ -47,7 +60,7 @@ jobs:
           gh release create "$GITHUB_REF_NAME" target/Kite.dmg --title "Kite $GITHUB_REF_NAME" --notes-file notes.md
 
       - name: Keep the build (manual runs)
-        if: ${{ !startsWith(github.ref, 'refs/tags/') }}
+        if: github.event_name == 'workflow_dispatch'
         uses: actions/upload-artifact@v4
         with:
           name: Kite.dmg
