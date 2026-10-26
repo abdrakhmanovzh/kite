@@ -1,0 +1,868 @@
+{
+ "Chat": {
+  "id": 0,
+  "type": {
+   "user_id": 0,
+   "@type": "chatTypePrivate"
+  },
+  "title": "",
+  "accent_color_id": 0,
+  "background_custom_emoji_id": "0",
+  "profile_accent_color_id": 0,
+  "profile_background_custom_emoji_id": "0",
+  "permissions": {
+   "can_send_basic_messages": false,
+   "can_send_audios": false,
+   "can_send_documents": false,
+   "can_send_photos": false,
+   "can_send_videos": false,
+   "can_send_video_notes": false,
+   "can_send_voice_notes": false,
+   "can_send_polls": false,
+   "can_send_other_messages": false,
+   "can_add_link_previews": false,
+   "can_change_info": false,
+   "can_invite_users": false,
+   "can_pin_messages": false,
+   "can_create_topics": false
+  },
+  "positions": [],
+  "chat_lists": [],
+  "has_protected_content": false,
+  "is_translatable": false,
+  "is_marked_as_unread": false,
+  "view_as_topics": false,
+  "has_scheduled_messages": false,
+  "can_be_deleted_only_for_self": false,
+  "can_be_deleted_for_all_users": false,
+  "can_be_reported": false,
+  "default_disable_notification": false,
+  "unread_count": 0,
+  "last_read_inbox_message_id": 0,
+  "last_read_outbox_message_id": 0,
+  "unread_mention_count": 0,
+  "unread_reaction_count": 0,
+  "notification_settings": {
+   "use_default_mute_for": false,
+   "mute_for": 0,
+   "use_default_sound": false,
+   "sound_id": "0",
+   "use_default_show_preview": false,
+   "show_preview": false,
+   "use_default_mute_stories": false,
+   "mute_stories": false,
+   "use_default_story_sound": false,
+   "story_sound_id": "0",
+   "use_default_show_story_poster": false,
+   "show_story_poster": false,
+   "use_default_disable_pinned_message_notifications": false,
+   "disable_pinned_message_notifications": false,
+   "use_default_disable_mention_notifications": false,
+   "disable_mention_notifications": false
+  },
+  "available_reactions": {
+   "max_reaction_count": 0,
+   "@type": "chatAvailableReactionsAll"
+  },
+  "message_auto_delete_time": 0,
+  "video_chat": {
+   "group_call_id": 0,
+   "has_participants": false
+  },
+  "reply_markup_message_id": 0,
+  "client_data": ""
+ },
+ "Message": {
+  "id": 0,
+  "sender_id": {
+   "user_id": 0,
+   "@type": "messageSenderUser"
+  },
+  "chat_id": 0,
+  "is_outgoing": false,
+  "is_pinned": false,
+  "is_from_offline": false,
+  "can_be_saved": false,
+  "has_timestamped_media": false,
+  "is_channel_post": false,
+  "is_paid_star_suggested_post": false,
+  "is_paid_ton_suggested_post": false,
+  "contains_unread_mention": false,
+  "date": 0,
+  "edit_date": 0,
+  "unread_reactions": [],
+  "self_destruct_in": 0.0,
+  "auto_delete_in": 0.0,
+  "via_bot_user_id": 0,
+  "sender_business_bot_user_id": 0,
+  "sender_boost_count": 0,
+  "paid_message_star_count": 0,
+  "author_signature": "",
+  "media_album_id": "0",
+  "effect_id": "0",
+  "summary_language_code": "",
+  "content": {
+   "@type": "messageExpiredPhoto"
+  }
+ },
+ "User": {
+  "id": 0,
+  "first_name": "",
+  "last_name": "",
+  "phone_number": "",
+  "status": {
+   "@type": "userStatusEmpty"
+  },
+  "accent_color_id": 0,
+  "background_custom_emoji_id": "0",
+  "profile_accent_color_id": 0,
+  "profile_background_custom_emoji_id": "0",
+  "is_contact": false,
+  "is_mutual_contact": false,
+  "is_close_friend": false,
+  "is_premium": false,
+  "is_support": false,
+  "restricts_new_chats": false,
+  "paid_message_star_count": 0,
+  "have_access": false,
+  "type": {
+   "@type": "userTypeRegular"
+  },
+  "language_code": "",
+  "added_to_attachment_menu": false
+ },
+ "File": {
+  "id": 0,
+  "size": 0,
+  "expected_size": 0,
+  "local": {
+   "path": "",
+   "can_be_downloaded": false,
+   "can_be_deleted": false,
+   "is_downloading_active": false,
+   "is_downloading_completed": false,
+   "download_offset": 0,
+   "downloaded_prefix_size": 0,
+   "downloaded_size": 0
+  },
+  "remote": {
+   "id": "",
+   "unique_id": "",
+   "is_uploading_active": false,
+   "is_uploading_completed": false,
+   "uploaded_size": 0
+  }
+ },
+ "Sticker": {
+  "id": "0",
+  "set_id": "0",
+  "width": 0,
+  "height": 0,
+  "emoji": "",
+  "format": {
+   "@type": "stickerFormatWebp"
+  },
+  "full_type": {
+   "@type": "stickerFullTypeRegular"
+  },
+  "sticker": {
+   "id": 0,
+   "size": 0,
+   "expected_size": 0,
+   "local": {
+    "path": "",
+    "can_be_downloaded": false,
+    "can_be_deleted": false,
+    "is_downloading_active": false,
+    "is_downloading_completed": false,
+    "download_offset": 0,
+    "downloaded_prefix_size": 0,
+    "downloaded_size": 0
+   },
+   "remote": {
+    "id": "",
+    "unique_id": "",
+    "is_uploading_active": false,
+    "is_uploading_completed": false,
+    "uploaded_size": 0
+   }
+  }
+ },
+ "PhotoSize": {
+  "type": "",
+  "photo": {
+   "id": 0,
+   "size": 0,
+   "expected_size": 0,
+   "local": {
+    "path": "",
+    "can_be_downloaded": false,
+    "can_be_deleted": false,
+    "is_downloading_active": false,
+    "is_downloading_completed": false,
+    "download_offset": 0,
+    "downloaded_prefix_size": 0,
+    "downloaded_size": 0
+   },
+   "remote": {
+    "id": "",
+    "unique_id": "",
+    "is_uploading_active": false,
+    "is_uploading_completed": false,
+    "uploaded_size": 0
+   }
+  },
+  "width": 0,
+  "height": 0,
+  "progressive_sizes": []
+ },
+ "ChatPosition": {
+  "list": {
+   "@type": "chatListMain"
+  },
+  "order": "0",
+  "is_pinned": false
+ },
+ "ChatFolderInfo": {
+  "id": 0,
+  "name": {
+   "text": {
+    "text": "",
+    "entities": []
+   },
+   "animate_custom_emoji": false
+  },
+  "icon": {
+   "name": ""
+  },
+  "color_id": 0,
+  "is_shareable": false,
+  "has_my_invite_links": false
+ },
+ "Supergroup": {
+  "id": 0,
+  "date": 0,
+  "status": {
+   "@type": "chatMemberStatusLeft"
+  },
+  "member_count": 0,
+  "boost_level": 0,
+  "has_automatic_translation": false,
+  "has_linked_chat": false,
+  "has_location": false,
+  "sign_messages": false,
+  "show_message_sender": false,
+  "join_to_send_messages": false,
+  "join_by_request": false,
+  "is_slow_mode_enabled": false,
+  "is_channel": false,
+  "is_broadcast_group": false,
+  "is_forum": false,
+  "is_direct_messages_group": false,
+  "is_administered_direct_messages_group": false,
+  "has_direct_messages_group": false,
+  "has_forum_tabs": false,
+  "paid_message_star_count": 0
+ },
+ "BasicGroup": {
+  "id": 0,
+  "member_count": 0,
+  "status": {
+   "@type": "chatMemberStatusLeft"
+  },
+  "is_active": false,
+  "upgraded_to_supergroup_id": 0
+ },
+ "MessageReaction": {
+  "type": {
+   "@type": "reactionTypePaid"
+  },
+  "total_count": 0,
+  "is_chosen": false,
+  "recent_sender_ids": []
+ },
+ "MessageInteractionInfo": {
+  "view_count": 0,
+  "forward_count": 0
+ },
+ "PollOption": {
+  "text": {
+   "text": "",
+   "entities": []
+  },
+  "voter_count": 0,
+  "vote_percentage": 0,
+  "is_chosen": false,
+  "is_being_chosen": false
+ },
+ "Poll": {
+  "id": "0",
+  "question": {
+   "text": "",
+   "entities": []
+  },
+  "options": [],
+  "total_voter_count": 0,
+  "recent_voter_ids": [],
+  "is_anonymous": false,
+  "type": {
+   "allow_multiple_answers": false,
+   "@type": "pollTypeRegular"
+  },
+  "open_period": 0,
+  "close_date": 0,
+  "is_closed": false
+ },
+ "ProfilePhoto": {
+  "id": "0",
+  "small": {
+   "id": 0,
+   "size": 0,
+   "expected_size": 0,
+   "local": {
+    "path": "",
+    "can_be_downloaded": false,
+    "can_be_deleted": false,
+    "is_downloading_active": false,
+    "is_downloading_completed": false,
+    "download_offset": 0,
+    "downloaded_prefix_size": 0,
+    "downloaded_size": 0
+   },
+   "remote": {
+    "id": "",
+    "unique_id": "",
+    "is_uploading_active": false,
+    "is_uploading_completed": false,
+    "uploaded_size": 0
+   }
+  },
+  "big": {
+   "id": 0,
+   "size": 0,
+   "expected_size": 0,
+   "local": {
+    "path": "",
+    "can_be_downloaded": false,
+    "can_be_deleted": false,
+    "is_downloading_active": false,
+    "is_downloading_completed": false,
+    "download_offset": 0,
+    "downloaded_prefix_size": 0,
+    "downloaded_size": 0
+   },
+   "remote": {
+    "id": "",
+    "unique_id": "",
+    "is_uploading_active": false,
+    "is_uploading_completed": false,
+    "uploaded_size": 0
+   }
+  },
+  "has_animation": false,
+  "is_personal": false
+ },
+ "ChatPhotoInfo": {
+  "small": {
+   "id": 0,
+   "size": 0,
+   "expected_size": 0,
+   "local": {
+    "path": "",
+    "can_be_downloaded": false,
+    "can_be_deleted": false,
+    "is_downloading_active": false,
+    "is_downloading_completed": false,
+    "download_offset": 0,
+    "downloaded_prefix_size": 0,
+    "downloaded_size": 0
+   },
+   "remote": {
+    "id": "",
+    "unique_id": "",
+    "is_uploading_active": false,
+    "is_uploading_completed": false,
+    "uploaded_size": 0
+   }
+  },
+  "big": {
+   "id": 0,
+   "size": 0,
+   "expected_size": 0,
+   "local": {
+    "path": "",
+    "can_be_downloaded": false,
+    "can_be_deleted": false,
+    "is_downloading_active": false,
+    "is_downloading_completed": false,
+    "download_offset": 0,
+    "downloaded_prefix_size": 0,
+    "downloaded_size": 0
+   },
+   "remote": {
+    "id": "",
+    "unique_id": "",
+    "is_uploading_active": false,
+    "is_uploading_completed": false,
+    "uploaded_size": 0
+   }
+  },
+  "has_animation": false,
+  "is_personal": false
+ },
+ "MessageReactions": {
+  "reactions": [],
+  "are_tags": false,
+  "paid_reactors": [],
+  "can_get_added_reactions": false
+ },
+ "MessageForwardInfo": {
+  "origin": {
+   "sender_user_id": 0,
+   "@type": "messageOriginUser"
+  },
+  "date": 0,
+  "public_service_announcement_type": ""
+ },
+ "VoiceNote": {
+  "duration": 0,
+  "waveform": "",
+  "mime_type": "",
+  "voice": {
+   "id": 0,
+   "size": 0,
+   "expected_size": 0,
+   "local": {
+    "path": "",
+    "can_be_downloaded": false,
+    "can_be_deleted": false,
+    "is_downloading_active": false,
+    "is_downloading_completed": false,
+    "download_offset": 0,
+    "downloaded_prefix_size": 0,
+    "downloaded_size": 0
+   },
+   "remote": {
+    "id": "",
+    "unique_id": "",
+    "is_uploading_active": false,
+    "is_uploading_completed": false,
+    "uploaded_size": 0
+   }
+  }
+ },
+ "VideoNote": {
+  "duration": 0,
+  "waveform": "",
+  "length": 0,
+  "video": {
+   "id": 0,
+   "size": 0,
+   "expected_size": 0,
+   "local": {
+    "path": "",
+    "can_be_downloaded": false,
+    "can_be_deleted": false,
+    "is_downloading_active": false,
+    "is_downloading_completed": false,
+    "download_offset": 0,
+    "downloaded_prefix_size": 0,
+    "downloaded_size": 0
+   },
+   "remote": {
+    "id": "",
+    "unique_id": "",
+    "is_uploading_active": false,
+    "is_uploading_completed": false,
+    "uploaded_size": 0
+   }
+  }
+ },
+ "Document": {
+  "file_name": "",
+  "mime_type": "",
+  "document": {
+   "id": 0,
+   "size": 0,
+   "expected_size": 0,
+   "local": {
+    "path": "",
+    "can_be_downloaded": false,
+    "can_be_deleted": false,
+    "is_downloading_active": false,
+    "is_downloading_completed": false,
+    "download_offset": 0,
+    "downloaded_prefix_size": 0,
+    "downloaded_size": 0
+   },
+   "remote": {
+    "id": "",
+    "unique_id": "",
+    "is_uploading_active": false,
+    "is_uploading_completed": false,
+    "uploaded_size": 0
+   }
+  }
+ },
+ "Photo": {
+  "has_stickers": false,
+  "sizes": []
+ },
+ "FormattedText": {
+  "text": "",
+  "entities": []
+ },
+ "TextEntity": {
+  "offset": 0,
+  "length": 0,
+  "type": {
+   "@type": "textEntityTypeMention"
+  }
+ },
+ "variants": {
+  "ChatType": {
+   "Private": {
+    "user_id": 0,
+    "@type": "chatTypePrivate"
+   },
+   "BasicGroup": {
+    "basic_group_id": 0,
+    "@type": "chatTypeBasicGroup"
+   },
+   "Supergroup": {
+    "supergroup_id": 0,
+    "is_channel": false,
+    "@type": "chatTypeSupergroup"
+   }
+  },
+  "UserStatus": {
+   "Online": {
+    "expires": 0,
+    "@type": "userStatusOnline"
+   },
+   "Offline": {
+    "was_online": 0,
+    "@type": "userStatusOffline"
+   },
+   "Recently": {
+    "by_my_privacy_settings": false,
+    "@type": "userStatusRecently"
+   }
+  },
+  "MessageSender": {
+   "User": {
+    "user_id": 0,
+    "@type": "messageSenderUser"
+   },
+   "Chat": {
+    "chat_id": 0,
+    "@type": "messageSenderChat"
+   }
+  },
+  "MessageReplyTo": {
+   "Message": {
+    "chat_id": 0,
+    "message_id": 0,
+    "checklist_task_id": 0,
+    "origin_send_date": 0,
+    "@type": "messageReplyToMessage"
+   }
+  },
+  "MessageOrigin": {
+   "User": {
+    "sender_user_id": 0,
+    "@type": "messageOriginUser"
+   }
+  },
+  "ChatList": {
+   "Main": {
+    "@type": "chatListMain"
+   },
+   "Archive": {
+    "@type": "chatListArchive"
+   },
+   "Folder": {
+    "chat_folder_id": 0,
+    "@type": "chatListFolder"
+   }
+  },
+  "ReactionType": {
+   "Emoji": {
+    "emoji": "",
+    "@type": "reactionTypeEmoji"
+   }
+  },
+  "StickerFormat": {
+   "Webp": {
+    "@type": "stickerFormatWebp"
+   },
+   "Tgs": {
+    "@type": "stickerFormatTgs"
+   },
+   "Webm": {
+    "@type": "stickerFormatWebm"
+   }
+  },
+  "TextEntityType": {
+   "Bold": {
+    "@type": "textEntityTypeBold"
+   },
+   "Italic": {
+    "@type": "textEntityTypeItalic"
+   },
+   "Code": {
+    "@type": "textEntityTypeCode"
+   },
+   "Strikethrough": {
+    "@type": "textEntityTypeStrikethrough"
+   },
+   "Url": {
+    "@type": "textEntityTypeUrl"
+   },
+   "TextUrl": {
+    "url": "",
+    "@type": "textEntityTypeTextUrl"
+   },
+   "Pre": {
+    "@type": "textEntityTypePre"
+   },
+   "Spoiler": {
+    "@type": "textEntityTypeSpoiler"
+   }
+  },
+  "PollType": {
+   "Regular": {
+    "allow_multiple_answers": false,
+    "@type": "pollTypeRegular"
+   }
+  }
+ },
+ "content": {
+  "MessageText": {
+   "text": {
+    "text": "",
+    "entities": []
+   },
+   "@type": "messageText"
+  },
+  "MessagePhoto": {
+   "photo": {
+    "has_stickers": false,
+    "sizes": []
+   },
+   "caption": {
+    "text": "",
+    "entities": []
+   },
+   "show_caption_above_media": false,
+   "has_spoiler": false,
+   "is_secret": false,
+   "@type": "messagePhoto"
+  },
+  "MessageSticker": {
+   "sticker": {
+    "id": "0",
+    "set_id": "0",
+    "width": 0,
+    "height": 0,
+    "emoji": "",
+    "format": {
+     "@type": "stickerFormatWebp"
+    },
+    "full_type": {
+     "@type": "stickerFullTypeRegular"
+    },
+    "sticker": {
+     "id": 0,
+     "size": 0,
+     "expected_size": 0,
+     "local": {
+      "path": "",
+      "can_be_downloaded": false,
+      "can_be_deleted": false,
+      "is_downloading_active": false,
+      "is_downloading_completed": false,
+      "download_offset": 0,
+      "downloaded_prefix_size": 0,
+      "downloaded_size": 0
+     },
+     "remote": {
+      "id": "",
+      "unique_id": "",
+      "is_uploading_active": false,
+      "is_uploading_completed": false,
+      "uploaded_size": 0
+     }
+    }
+   },
+   "is_premium": false,
+   "@type": "messageSticker"
+  },
+  "MessageVoiceNote": {
+   "voice_note": {
+    "duration": 0,
+    "waveform": "",
+    "mime_type": "",
+    "voice": {
+     "id": 0,
+     "size": 0,
+     "expected_size": 0,
+     "local": {
+      "path": "",
+      "can_be_downloaded": false,
+      "can_be_deleted": false,
+      "is_downloading_active": false,
+      "is_downloading_completed": false,
+      "download_offset": 0,
+      "downloaded_prefix_size": 0,
+      "downloaded_size": 0
+     },
+     "remote": {
+      "id": "",
+      "unique_id": "",
+      "is_uploading_active": false,
+      "is_uploading_completed": false,
+      "uploaded_size": 0
+     }
+    }
+   },
+   "caption": {
+    "text": "",
+    "entities": []
+   },
+   "is_listened": false,
+   "@type": "messageVoiceNote"
+  },
+  "MessageVideoNote": {
+   "video_note": {
+    "duration": 0,
+    "waveform": "",
+    "length": 0,
+    "video": {
+     "id": 0,
+     "size": 0,
+     "expected_size": 0,
+     "local": {
+      "path": "",
+      "can_be_downloaded": false,
+      "can_be_deleted": false,
+      "is_downloading_active": false,
+      "is_downloading_completed": false,
+      "download_offset": 0,
+      "downloaded_prefix_size": 0,
+      "downloaded_size": 0
+     },
+     "remote": {
+      "id": "",
+      "unique_id": "",
+      "is_uploading_active": false,
+      "is_uploading_completed": false,
+      "uploaded_size": 0
+     }
+    }
+   },
+   "is_viewed": false,
+   "is_secret": false,
+   "@type": "messageVideoNote"
+  },
+  "MessageDocument": {
+   "document": {
+    "file_name": "",
+    "mime_type": "",
+    "document": {
+     "id": 0,
+     "size": 0,
+     "expected_size": 0,
+     "local": {
+      "path": "",
+      "can_be_downloaded": false,
+      "can_be_deleted": false,
+      "is_downloading_active": false,
+      "is_downloading_completed": false,
+      "download_offset": 0,
+      "downloaded_prefix_size": 0,
+      "downloaded_size": 0
+     },
+     "remote": {
+      "id": "",
+      "unique_id": "",
+      "is_uploading_active": false,
+      "is_uploading_completed": false,
+      "uploaded_size": 0
+     }
+    }
+   },
+   "caption": {
+    "text": "",
+    "entities": []
+   },
+   "@type": "messageDocument"
+  },
+  "MessageAudio": {
+   "audio": {
+    "duration": 0,
+    "title": "",
+    "performer": "",
+    "file_name": "",
+    "mime_type": "",
+    "external_album_covers": [],
+    "audio": {
+     "id": 0,
+     "size": 0,
+     "expected_size": 0,
+     "local": {
+      "path": "",
+      "can_be_downloaded": false,
+      "can_be_deleted": false,
+      "is_downloading_active": false,
+      "is_downloading_completed": false,
+      "download_offset": 0,
+      "downloaded_prefix_size": 0,
+      "downloaded_size": 0
+     },
+     "remote": {
+      "id": "",
+      "unique_id": "",
+      "is_uploading_active": false,
+      "is_uploading_completed": false,
+      "uploaded_size": 0
+     }
+    }
+   },
+   "caption": {
+    "text": "",
+    "entities": []
+   },
+   "@type": "messageAudio"
+  },
+  "MessagePoll": {
+   "poll": {
+    "id": "0",
+    "question": {
+     "text": "",
+     "entities": []
+    },
+    "options": [],
+    "total_voter_count": 0,
+    "recent_voter_ids": [],
+    "is_anonymous": false,
+    "type": {
+     "allow_multiple_answers": false,
+     "@type": "pollTypeRegular"
+    },
+    "open_period": 0,
+    "close_date": 0,
+    "is_closed": false
+   },
+   "@type": "messagePoll"
+  },
+  "MessageChatAddMembers": {
+   "member_user_ids": [],
+   "@type": "messageChatAddMembers"
+  },
+  "MessagePinMessage": {
+   "message_id": 0,
+   "@type": "messagePinMessage"
+  }
+ }
+}

@@ -1,0 +1,6 @@
+/target/
+.DS_Store
+.env
+
+# Screenshots of real chats; keep out of the repo.
+design/audit-*/
