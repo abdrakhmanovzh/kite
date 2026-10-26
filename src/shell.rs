@@ -205,6 +205,11 @@ pub struct Messenger {
     custom_emoji: HashMap<i64, Option<tdlib_rs::types::Sticker>>,
     /// The message menu's reactions expanded to the full list.
     reactions_expanded: bool,
+    /// A newer release, once a check finds one; see `crate::update`.
+    update: Option<crate::update::Release>,
+    /// Downloading and installing it.
+    updating: bool,
+    _update_checks: Option<Task<()>>,
     /// Unread messages in unmuted chats, for the menu bar badge.
     unread_total: i32,
     /// Reactions Telegram allows on the message whose menu is open.
@@ -450,6 +455,9 @@ impl Messenger {
             profile_photos: HashMap::new(),
             reaction_options: None,
             unread_total: 0,
+            update: None,
+            updating: false,
+            _update_checks: None,
             custom_emoji: HashMap::new(),
             reactions_expanded: false,
             shared_media: HashMap::new(),
@@ -565,6 +573,7 @@ impl Messenger {
         cx.background_executor()
             .spawn(async { crate::media::prune_audio_cache() })
             .detach();
+        app.start_update_checks(cx);
         let permission = crate::notifications::authorization(false);
         cx.spawn(async move |this, cx| {
             if let Ok(Ok(allowed)) = permission.recv().await {
@@ -1342,6 +1351,68 @@ impl Messenger {
             }
             _ => {}
         }
+    }
+
+    /// Looks for a newer release shortly after launch, then every six
+    /// hours. Only the installed app updates itself.
+    fn start_update_checks(&mut self, cx: &mut Context<Self>) {
+        if crate::update::installed_bundle().is_none() {
+            return;
+        }
+        self._update_checks = Some(cx.spawn(async move |this, cx| {
+            smol::Timer::after(Duration::from_secs(10)).await;
+            loop {
+                let found = cx
+                    .background_executor()
+                    .spawn(async { crate::update::check() })
+                    .await;
+                // Failures (offline, rate limits) just wait for the next check.
+                if let Ok(Some(release)) = found
+                    && this
+                        .update(cx, |this, cx| {
+                            this.update = Some(release);
+                            cx.notify();
+                        })
+                        .is_err()
+                {
+                    break;
+                }
+                smol::Timer::after(Duration::from_secs(6 * 60 * 60)).await;
+            }
+        }));
+    }
+
+    /// Downloads and installs the found release, then restarts into it.
+    fn install_update(&mut self, cx: &mut Context<Self>) {
+        let (Some(release), Some(bundle)) =
+            (self.update.clone(), crate::update::installed_bundle())
+        else {
+            return;
+        };
+        if self.updating {
+            return;
+        }
+        self.updating = true;
+        cx.notify();
+        cx.spawn(async move |this, cx| {
+            let target = bundle.clone();
+            let installed = cx
+                .background_executor()
+                .spawn(async move { crate::update::install(&release, &target) })
+                .await
+                .and_then(|()| crate::update::relaunch_after_exit(&bundle));
+            let _ = this.update(cx, |this, cx| match installed {
+                // Quit cleanly (the Telegram session closes first); the new
+                // version opens once this process is gone.
+                Ok(()) => this.quit(cx),
+                Err(error) => {
+                    this.updating = false;
+                    this.error = Some(format!("Update failed: {error:#}"));
+                    cx.notify();
+                }
+            });
+        })
+        .detach();
     }
 
     fn set_unread(&mut self, count: i32, cx: &mut App) {

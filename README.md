@@ -19,7 +19,8 @@
 - **Messages**: replies, edits, forwards, reactions, polls, pinned messages, an unread divider and in-chat search
 - **Formatting**: Telegram markdown or shortcuts (<kbd>⌘B</kbd>, <kbd>⌘I</kbd>, <kbd>⇧⌘M</kbd> and more); right-click the message field for the full list
 - **Media**: a photo viewer, profile photo history, voice and round video playback, and animated stickers with a sticker panel
-- **macOS**: follows light and dark mode; closing the window (<kbd>⌘W</kbd>) keeps Kite running in the menu bar
+- **macOS**: follows light and dark mode; closing the window (<kbd>⌘W</kbd>) keeps Kite running in the menu bar, with an unread badge
+- **Updates**: Kite checks GitHub for new releases and updates itself in one click
 
 Not included: calls, voice recording, stories, secret chats, group administration.
 

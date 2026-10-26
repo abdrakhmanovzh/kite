@@ -205,6 +205,35 @@ impl Messenger {
                     )
                     .vertical_scrollbar(&self.chat_scroll),
             )
+            .children(self.update_button(cx))
+    }
+
+    /// "Update to vX" under the chat list once a newer release is found.
+    fn update_button(&self, cx: &mut Context<Self>) -> Option<Div> {
+        let release = self.update.as_ref()?;
+        let label = if self.updating {
+            "Updating…".to_owned()
+        } else {
+            format!("Update to {}", release.version)
+        };
+        Some(
+            div()
+                .flex_shrink_0()
+                .px(px(8.))
+                .pb(px(8.))
+                .pt(px(4.))
+                .child(
+                    Button::new("install-update")
+                        .primary()
+                        .w_full()
+                        .h(px(ui::CONTROL_MD))
+                        .rounded(px(ui::RADIUS_MD))
+                        .loading(self.updating)
+                        .icon(Icon::new(IconName::ArrowDown).text_color(ui::hsla(ui::WHITE)))
+                        .label(label)
+                        .on_click(cx.listener(|this, _, _, cx| this.install_update(cx))),
+                ),
+        )
     }
 
     fn top_actions(&self, cx: &mut Context<Self>) -> Div {

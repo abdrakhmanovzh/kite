@@ -11,6 +11,7 @@ mod stickers;
 mod telegram;
 mod tray;
 mod ui;
+mod update;
 mod webm;
 
 use gpui_kit::{prelude::*, *};
