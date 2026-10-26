@@ -7,6 +7,7 @@ mod menu;
 mod palette;
 mod pane;
 mod playback;
+mod selectable;
 mod sidebar;
 mod viewer;
 mod widgets;
@@ -204,6 +205,8 @@ pub struct Messenger {
     custom_emoji: HashMap<i64, Option<tdlib_rs::types::Sticker>>,
     /// The message menu's reactions expanded to the full list.
     reactions_expanded: bool,
+    /// Unread messages in unmuted chats, for the menu bar badge.
+    unread_total: i32,
     /// Reactions Telegram allows on the message whose menu is open.
     reaction_options: Option<((i64, i64), Vec<String>)>,
     /// Profile photos per chat, newest first, for the avatar viewer.
@@ -446,6 +449,7 @@ impl Messenger {
             profiles: HashMap::new(),
             profile_photos: HashMap::new(),
             reaction_options: None,
+            unread_total: 0,
             custom_emoji: HashMap::new(),
             reactions_expanded: false,
             shared_media: HashMap::new(),
@@ -1226,6 +1230,13 @@ impl Messenger {
                     chat.info.draft_message = update.draft_message;
                 }
             }
+            // Telegram's own total, which leaves out muted chats like its
+            // badge does; shown on the menu bar icon.
+            Update::UnreadMessageCount(update)
+                if update.chat_list == tdlib_rs::enums::ChatList::Main =>
+            {
+                self.set_unread(update.unread_unmuted_count, cx);
+            }
             Update::ChatReadInbox(update) => {
                 if let Some(chat) = self.chats.get_mut(&update.chat_id) {
                     chat.info.unread_count = update.unread_count;
@@ -1330,6 +1341,18 @@ impl Messenger {
                 }
             }
             _ => {}
+        }
+    }
+
+    fn set_unread(&mut self, count: i32, cx: &mut App) {
+        self.unread_total = count;
+        self.sync_tray(cx);
+    }
+
+    /// Shows the unread count on the menu bar item, once it exists.
+    pub fn sync_tray(&self, cx: &App) {
+        if let Some(tray) = cx.try_global::<crate::tray::Tray>() {
+            tray.set_unread(self.unread_total);
         }
     }
 

@@ -848,7 +848,8 @@ impl Messenger {
                 ..Default::default()
             },
         ));
-        let mut styled = StyledText::new(text).with_highlights(highlights);
+        let text: SharedString = text.into();
+        let mut styled = StyledText::new(text.clone()).with_highlights(highlights);
         if !rich.code.is_empty() {
             styled = styled.with_font_family_overrides(
                 rich.code
@@ -856,19 +857,15 @@ impl Messenger {
                     .map(|range| (range.clone(), "Menlo".into())),
             );
         }
-        let element = if rich.links.is_empty() {
-            styled.into_any_element()
-        } else {
-            let ranges = rich.links.iter().map(|l| l.range.clone()).collect();
-            let urls: Vec<String> = rich.links.into_iter().map(|l| l.url).collect();
-            InteractiveText::new(("text", message.id as u64), styled)
-                .on_click(ranges, move |index, _, cx| {
-                    if let Some(url) = urls.get(index) {
-                        cx.open_url(url);
-                    }
-                })
-                .into_any_element()
-        };
+        // Selectable and copyable; links still open on a plain click.
+        let element = super::selectable::SelectableRich::new(
+            ("text", message.id as u64),
+            text,
+            styled,
+            rich.links.into_iter().map(|l| (l.range, l.url)).collect(),
+            ui::hsla_alpha(if outgoing { ui::OUT_ACCENT } else { ui::ACCENT }, 0x55),
+        )
+        .into_any_element();
         let meta_color = if outgoing { ui::META_OUT } else { ui::META_IN };
         div()
             .relative()

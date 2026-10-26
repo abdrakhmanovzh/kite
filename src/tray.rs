@@ -10,11 +10,16 @@ use objc2::{
 };
 use std::cell::OnceCell;
 
+use block2::RcBlock;
+use objc2::runtime::Bool;
 use objc2_app_kit::{
-    NSApplication, NSEventMask, NSEventModifierFlags, NSEventType, NSImage, NSMenu, NSMenuItem,
-    NSStatusBar, NSStatusItem, NSVariableStatusItemLength,
+    NSApplication, NSBezierPath, NSColor, NSCompositingOperation, NSEventMask,
+    NSEventModifierFlags, NSEventType, NSFont, NSFontAttributeName, NSForegroundColorAttributeName,
+    NSImage, NSMenu, NSMenuItem, NSRectFillUsingOperation, NSStatusBar, NSStatusBarButton,
+    NSStatusItem, NSStringDrawing, NSVariableStatusItemLength,
 };
 use objc2_foundation::{NSData, NSObject, NSSize, NSString};
+use objc2_foundation::{NSDictionary, NSPoint, NSRect};
 
 /// What the menu bar item asks the app to do.
 pub enum TrayEvent {
@@ -84,6 +89,9 @@ define_class!(
 pub struct Tray {
     _item: Retained<NSStatusItem>,
     _target: Retained<Target>,
+    button: Option<Retained<NSStatusBarButton>>,
+    /// The kite alone, as a template image.
+    kite: Option<Retained<NSImage>>,
 }
 
 impl gpui_kit::Global for Tray {}
@@ -101,14 +109,16 @@ impl Tray {
         let target: Retained<Target> = unsafe { msg_send![super(target), init] };
 
         let item = NSStatusBar::systemStatusBar().statusItemWithLength(NSVariableStatusItemLength);
-        if let Some(button) = item.button(mtm) {
-            let data = NSData::with_bytes(include_bytes!("../assets/icon/tray.png"));
-            if let Some(image) = NSImage::initWithData(NSImage::alloc(), &data) {
-                // A template image: macOS tints it for light and dark menu bars.
-                image.setSize(NSSize::new(22., 22.));
-                image.setTemplate(true);
-                button.setImage(Some(&image));
-            }
+        let data = NSData::with_bytes(include_bytes!("../assets/icon/tray.png"));
+        let kite = NSImage::initWithData(NSImage::alloc(), &data);
+        if let Some(kite) = &kite {
+            // A template image: macOS tints it for light and dark menu bars.
+            kite.setSize(NSSize::new(ICON, ICON));
+            kite.setTemplate(true);
+        }
+        let button = item.button(mtm);
+        if let Some(button) = &button {
+            button.setImage(kite.as_deref());
             button.setToolTip(Some(&NSString::from_str("Kite")));
             // SAFETY: The target responds to `clicked:` and outlives the
             // button (both are held by `Tray`).
@@ -144,6 +154,102 @@ impl Tray {
         Some(Self {
             _item: item,
             _target: target,
+            button,
+            kite,
         })
     }
+
+    /// Shows `count` unread messages as a red badge on the kite, like
+    /// Telegram; zero shows the plain kite.
+    pub fn set_unread(&self, count: i32) {
+        let (Some(button), Some(kite)) = (&self.button, &self.kite) else {
+            return;
+        };
+        if count <= 0 {
+            button.setImage(Some(kite));
+            return;
+        }
+        let label = if count > 99 {
+            "99+".to_owned()
+        } else {
+            count.to_string()
+        };
+        button.setImage(Some(&badged(kite, &label)));
+    }
+}
+
+/// Points per side of the menu bar icon.
+const ICON: f64 = 22.;
+const BADGE_HEIGHT: f64 = 12.;
+
+/// The kite with a red count badge at its top right. Drawn lazily by AppKit
+/// in the menu bar's appearance: the kite takes the menu bar's text color
+/// (what a template image would get), the badge stays red.
+fn badged(kite: &Retained<NSImage>, label: &str) -> Retained<NSImage> {
+    let font = NSFont::boldSystemFontOfSize(8.5);
+    let white = NSColor::whiteColor();
+    // SAFETY: AppKit's string attribute keys, with matching value types.
+    let attrs = unsafe {
+        NSDictionary::from_slices(
+            &[NSFontAttributeName, NSForegroundColorAttributeName],
+            &[&*font as &AnyObject, &*white as &AnyObject],
+        )
+    };
+    let text = NSString::from_str(label);
+    // SAFETY: Measuring with the attributes built above.
+    let text_size = unsafe { text.sizeWithAttributes(Some(&attrs)) };
+    let badge_width = (text_size.width + 6.).max(BADGE_HEIGHT);
+    // Wide counts extend the image to the right rather than covering the kite.
+    let width = (ICON - 9. + badge_width).max(ICON);
+    let kite = kite.clone();
+    let draw = RcBlock::new(move |bounds: NSRect| -> Bool {
+        // The kite in the menu bar's text color.
+        kite.drawInRect_fromRect_operation_fraction(
+            NSRect::new(NSPoint::new(0., 0.), NSSize::new(ICON, ICON)),
+            NSRect::ZERO,
+            NSCompositingOperation::SourceOver,
+            1.,
+        );
+        NSColor::labelColor().setFill();
+        NSRectFillUsingOperation(
+            NSRect::new(NSPoint::new(0., 0.), NSSize::new(ICON, ICON)),
+            NSCompositingOperation::SourceAtop,
+        );
+        // Badge, top right (y grows up), with a clear ring so it stands off
+        // the kite.
+        let badge = NSRect::new(
+            NSPoint::new(
+                bounds.size.width - badge_width,
+                bounds.size.height - BADGE_HEIGHT,
+            ),
+            NSSize::new(badge_width, BADGE_HEIGHT),
+        );
+        let ring = NSRect::new(
+            NSPoint::new(badge.origin.x - 1.5, badge.origin.y - 1.5),
+            NSSize::new(badge.size.width + 3., badge.size.height + 3.),
+        );
+        NSColor::blackColor().setFill();
+        let radius = (BADGE_HEIGHT + 3.) / 2.;
+        let clear = NSBezierPath::bezierPathWithRoundedRect_xRadius_yRadius(ring, radius, radius);
+        if let Some(context) = objc2_app_kit::NSGraphicsContext::currentContext() {
+            context.saveGraphicsState();
+            context.setCompositingOperation(NSCompositingOperation::Clear);
+            clear.fill();
+            context.restoreGraphicsState();
+        }
+        NSColor::systemRedColor().setFill();
+        let radius = BADGE_HEIGHT / 2.;
+        NSBezierPath::bezierPathWithRoundedRect_xRadius_yRadius(badge, radius, radius).fill();
+        let at = NSPoint::new(
+            badge.origin.x + (badge.size.width - text_size.width) / 2.,
+            badge.origin.y + (badge.size.height - text_size.height) / 2.,
+        );
+        // SAFETY: Drawing with the attributes built above.
+        unsafe { text.drawAtPoint_withAttributes(at, Some(&attrs)) };
+        Bool::YES
+    });
+    let image =
+        NSImage::imageWithSize_flipped_drawingHandler(NSSize::new(width, ICON), false, &draw);
+    image.setTemplate(false);
+    image
 }

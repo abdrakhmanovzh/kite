@@ -366,13 +366,16 @@ impl Messenger {
                 .text_color(gpui_kit::white())
                 .flex()
                 .flex_col()
-                .on_mouse_down(
-                    MouseButton::Left,
-                    cx.listener(|this, _, _, cx| {
-                        this.viewer = None;
-                        cx.notify();
-                    }),
-                )
+                // Blocks hover and clicks for everything underneath.
+                .occlude()
+                // Close on a full click (down and up on the backdrop): closing
+                // on mouse down let the release land on whatever was behind.
+                // Children stop their own mouse downs, so clicks on the photo
+                // or controls don't count.
+                .on_click(cx.listener(|this, _, _, cx| {
+                    this.viewer = None;
+                    cx.notify();
+                }))
                 // Top bar: who and when, then actions.
                 .child(
                     div()

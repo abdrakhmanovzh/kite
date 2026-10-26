@@ -93,6 +93,14 @@ impl Messenger {
         self.stickers = seed.stickers;
         self.stickers_loaded = true;
         self.chats_end = true;
+        // The menu bar badge, as Telegram would count it: unmuted chats only.
+        let unread: i32 = self
+            .chats
+            .values()
+            .filter(|c| c.info.notification_settings.mute_for == 0 && c.order(List::Main) > 0)
+            .map(|c| c.info.unread_count)
+            .sum();
+        self.set_unread(unread, cx);
         self.connection = "Connected";
         self.login = Login::Ready;
         self.demo_scene(window, cx);

@@ -79,6 +79,8 @@ fn start_tray(view: WeakEntity<shell::Messenger>, cx: &mut App) {
         return;
     };
     cx.set_global(tray);
+    // A count may have arrived before the item existed.
+    let _ = view.update(cx, |view, cx| view.sync_tray(cx));
     cx.spawn(async move |cx| {
         while let Ok(event) = received.recv().await {
             let quit = matches!(event, tray::TrayEvent::Quit);
