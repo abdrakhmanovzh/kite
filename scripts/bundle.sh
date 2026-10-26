@@ -45,6 +45,14 @@ if [ "${1:-}" = "--dmg" ]; then
     cp -R "$app_path" "$stage/"
     ln -s /Applications "$stage/Applications"
     rm -f target/Kite.dmg
-    hdiutil create -volname Kite -srcfolder "$stage" -format UDZO -ov target/Kite.dmg >/dev/null
+    # hdiutil intermittently fails with "Resource busy" (often on CI
+    # machines, while the system scans the new files); try a few times.
+    for attempt in 1 2 3 4 5; do
+        if hdiutil create -volname Kite -srcfolder "$stage" -format UDZO -ov target/Kite.dmg >/dev/null; then
+            break
+        fi
+        [ "$attempt" = 5 ] && exit 1
+        sleep $((attempt * 5))
+    done
     printf 'Packed %s\n' "$PWD/target/Kite.dmg"
 fi
